@@ -27,7 +27,7 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Setup Android SDK
+    - name: Setup Android SDK & Properties
       uses: android-actions/setup-android@v3
 
     - name: Build Debug APK
@@ -39,8 +39,12 @@ jobs:
         fi
         PROJECT_DIR=$(dirname "$GRADLEW_PATH")
         cd "$PROJECT_DIR"
+        
+        # Tạo file local.properties tự động
+        echo "sdk.dir=$ANDROID_HOME" > local.properties
+        
         chmod +x gradlew
-        ./gradlew assembleDebug -x test --stacktrace
+        ./gradlew assembleDebug -x test --continue --stacktrace
 
     - name: Upload APK Artifact
       if: always()
