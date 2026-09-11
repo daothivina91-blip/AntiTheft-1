@@ -1,0 +1,44 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Unzip project (if zipped)
+      run: |
+        if [ -f AntiTheft_Fixed.zip ]; then
+          unzip AntiTheft_Fixed.zip -d .
+        elif [ -f AntiTheft.zip ]; then
+          unzip AntiTheft.zip -d .
+        fi
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Build Debug APK
+      run: |
+        find . -name "gradlew" -exec chmod +x {} \;
+        project_dir=$(find . -name "build.gradle" -exec dirname {} \; | head -n 1)
+        cd $project_dir
+        ./gradlew assembleDebug
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-debug
+        path: '**/build/outputs/apk/debug/*.apk'
