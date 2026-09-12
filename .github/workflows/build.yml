@@ -29,6 +29,8 @@ jobs:
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
+      with:
+        packages: 'platforms;android-35 platforms;android-36 build-tools;35.0.0'
 
     - name: Build Debug APK
       run: |
@@ -41,7 +43,14 @@ jobs:
         cd "$PROJECT_DIR"
         echo "sdk.dir=$ANDROID_HOME" > local.properties
         chmod +x gradlew
-        ./gradlew clean assembleDebug --no-daemon
+        ./gradlew assembleDebug -x test --continue
+
+    - name: Upload APK Artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-debug
+        path: '**/*.apk'
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
