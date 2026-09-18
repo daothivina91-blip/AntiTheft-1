@@ -27,10 +27,16 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Install Android SDK 35 & 36
+    - name: Force Fix SDK Version to 34
       run: |
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "platforms;android-36" "build-tools;35.0.0"
+        find . -name "build.gradle*" -exec sed -i 's/compileSdk 35/compileSdk 34/g' {} +
+        find . -name "build.gradle*" -exec sed -i 's/compileSdk = 35/compileSdk = 34/g' {} +
+        find . -name "build.gradle*" -exec sed -i 's/compileSdk 36/compileSdk 34/g' {} +
+        find . -name "build.gradle*" -exec sed -i 's/compileSdk = 36/compileSdk = 34/g' {} +
+        find . -name "build.gradle*" -exec sed -i 's/targetSdk 35/targetSdk 34/g' {} +
+        find . -name "build.gradle*" -exec sed -i 's/targetSdk = 35/targetSdk = 34/g' {} +
+        find . -name "build.gradle*" -exec sed -i 's/targetSdk 36/targetSdk 34/g' {} +
+        find . -name "build.gradle*" -exec sed -i 's/targetSdk = 36/targetSdk = 34/g' {} +
 
     - name: Build Debug APK
       run: |
